@@ -11,6 +11,7 @@ import org.openide.WizardDescriptor;
 import org.openide.WizardValidationException;
 import org.openide.util.ChangeSupport;
 import org.openide.util.HelpCtx;
+import th.co.geniustree.virgo.server.Constants;
 
 public class VirgoWizardPanel1 implements WizardDescriptor.Panel<WizardDescriptor>, WizardDescriptor.ValidatingPanel<WizardDescriptor> {
 
@@ -18,11 +19,10 @@ public class VirgoWizardPanel1 implements WizardDescriptor.Panel<WizardDescripto
     private boolean valid = true;
     private ChangeSupport changSupport = new ChangeSupport(this);
     /**
-     * The visual component that displays this panel. If you need to access the
-     * component from this class, just use getComponent().
+     * The visual component that displays this panel. If you need to access the component from this class, just use getComponent().
      */
     private VirgoVisualPanel1 component;
-    private int jmxPort;
+    private Integer jmxPort;
     private String password;
 
     public VirgoWizardPanel1() {
@@ -30,7 +30,6 @@ public class VirgoWizardPanel1 implements WizardDescriptor.Panel<WizardDescripto
             component = new VirgoVisualPanel1();
         }
     }
-    
 
     // Get the visual component for the panel. In this template, the component
     // is kept separate. This can be more efficient: if the wizard is created
@@ -38,7 +37,7 @@ public class VirgoWizardPanel1 implements WizardDescriptor.Panel<WizardDescripto
     // create only those which really need to be visible.
     @Override
     public VirgoVisualPanel1 getComponent() {
-        
+
         return component;
     }
 
@@ -83,13 +82,12 @@ public class VirgoWizardPanel1 implements WizardDescriptor.Panel<WizardDescripto
     @Override
     public void storeSettings(WizardDescriptor wiz) {
         if (isValid()) {
-            InstancePropertiesManager manager = InstancePropertiesManager.getInstance();
-            InstanceProperties jmsPort = manager.createProperties(NETBEANS_VIRGO_SERVER);
-            jmsPort.putInt("jmsPort", jmxPort);
-            InstanceProperties username = manager.createProperties(NETBEANS_VIRGO_SERVER);
-            username.putString("username", component.getUserName().getText());
-            InstanceProperties passwordProp = manager.createProperties(NETBEANS_VIRGO_SERVER);
-            passwordProp.putString("password", password);
+            if (component.getVirgoRootFile() != null) {
+                wiz.putProperty(Constants.VIRGO_ROOT, component.getVirgoRootFile().getAbsolutePath());
+            }
+            wiz.putProperty(Constants.JMS_PORT, jmxPort);
+            wiz.putProperty(Constants.USERNAME, component.getUserName().getText());
+            wiz.putProperty(Constants.PASSWORD, password);
         }
     }
 

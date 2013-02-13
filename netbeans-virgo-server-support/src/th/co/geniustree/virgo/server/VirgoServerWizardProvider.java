@@ -19,7 +19,7 @@ public class VirgoServerWizardProvider implements ServerWizardProvider {
 
     @Override
     public String getDisplayName() {
-        return "Eclipse Virgo 3.6.0";
+        return Constants.VIRGO_SERVER_NAME;
     }
 
     @Override

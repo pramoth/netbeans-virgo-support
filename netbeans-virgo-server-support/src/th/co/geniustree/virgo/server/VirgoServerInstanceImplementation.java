@@ -4,34 +4,35 @@
  */
 package th.co.geniustree.virgo.server;
 
+import java.util.Map;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import org.netbeans.api.server.ServerInstance;
+import org.netbeans.api.server.properties.InstanceProperties;
 import org.netbeans.spi.server.ServerInstanceImplementation;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
-import org.openide.util.lookup.ServiceProvider;
+import org.openide.util.Lookup;
+import org.openide.util.lookup.Lookups;
 
 /**
  *
  * @author Pramoth Suwanpech <pramoth@geniustree.co.th>
  */
-public class VirgoServerInstanceImplementation implements ServerInstanceImplementation {
+public class VirgoServerInstanceImplementation implements ServerInstanceImplementation, Lookup.Provider {
 
     private final String serverName;
     private final String instanceName;
     private final boolean removable;
-    private ServerInstance serverInstance;
-    private final VirgoServerInstanceProvider provider;
     private JPanel customizer;
+    private final Map<String, Object> instanceProps;
 
-    public VirgoServerInstanceImplementation(VirgoServerInstanceProvider provider, String serverName, String instanceName, boolean removable) {
-        this.provider = provider;
+    public VirgoServerInstanceImplementation(Map<String, Object> instanceProps, String serverName, String instanceName, boolean removable) {
         this.serverName = serverName;
         this.instanceName = instanceName;
         this.removable = removable;
+        this.instanceProps = instanceProps;
     }
 
     @Override
@@ -46,7 +47,7 @@ public class VirgoServerInstanceImplementation implements ServerInstanceImplemen
 
     @Override
     public Node getFullNode() {
-        return new VirgoServerNode();
+        return new VirgoServerNode(this);
     }
 
     @Override
@@ -78,5 +79,14 @@ public class VirgoServerInstanceImplementation implements ServerInstanceImplemen
     @Override
     public boolean isRemovable() {
         return removable;
+    }
+
+    @Override
+    public Lookup getLookup() {
+        return Lookups.fixed(new StartCommand());
+    }
+
+    public Map<String, Object> getInstanceProps() {
+        return instanceProps;
     }
 }
