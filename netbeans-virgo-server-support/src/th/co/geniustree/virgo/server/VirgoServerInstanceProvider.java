@@ -78,7 +78,6 @@ public class VirgoServerInstanceProvider implements ServerInstanceProvider {
             instanceFile.setAttribute(Constants.JMS_PORT, param.get(Constants.JMS_PORT));
             instanceFile.setAttribute(Constants.USERNAME, param.get(Constants.USERNAME));
             instanceFile.setAttribute(Constants.PASSWORD, param.get(Constants.PASSWORD));
-            ServerInstance instance = ServerInstanceFactory.createServerInstance(new VirgoServerInstanceImplementation(param, Constants.VIRGO_SERVER_NAME, (String) param.get(Constants.DISPLAY_NAME), true));
             changeSupport.fireChange();
         } catch (IOException ex) {
             Exceptions.printStackTrace(ex);
