@@ -4,10 +4,9 @@
  */
 package th.co.geniustree.virgo.server;
 
+import th.co.geniustree.virgo.server.api.Constants;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.swing.event.ChangeListener;
@@ -18,9 +17,9 @@ import org.openide.filesystems.FileObject;
 import org.openide.filesystems.FileUtil;
 import org.openide.util.ChangeSupport;
 import org.openide.util.Exceptions;
-import org.openide.util.NbPreferences;
 import org.openide.util.lookup.ServiceProvider;
 import org.openide.util.lookup.ServiceProviders;
+import th.co.geniustree.virgo.server.api.VirgoServerAttributes;
 
 /**
  *
@@ -44,13 +43,13 @@ public class VirgoServerInstanceProvider implements ServerInstanceProvider {
             FileObject[] childrens = virgoConfigRoot.getChildren();
             instances.clear();
             for (FileObject children : childrens) {
-                Map<String, Object> param = new HashMap<String, Object>();
-                param.put(Constants.VIRGO_ROOT, children.getAttribute(Constants.VIRGO_ROOT));
-                param.put(Constants.DISPLAY_NAME, children.getAttribute(Constants.DISPLAY_NAME));
-                param.put(Constants.JMS_PORT, children.getAttribute(Constants.JMS_PORT));
-                param.put(Constants.USERNAME, children.getAttribute(Constants.USERNAME));
-                param.put(Constants.PASSWORD, children.getAttribute(Constants.PASSWORD));
-                ServerInstance instance = ServerInstanceFactory.createServerInstance(new VirgoServerInstanceImplementation(param, Constants.VIRGO_SERVER_NAME, (String) param.get(Constants.DISPLAY_NAME), true));
+                VirgoServerAttributes attr = new VirgoServerAttributes();
+                attr.put(Constants.VIRGO_ROOT, children.getAttribute(Constants.VIRGO_ROOT));
+                attr.put(Constants.DISPLAY_NAME, children.getAttribute(Constants.DISPLAY_NAME));
+                attr.put(Constants.JMX_PORT, children.getAttribute(Constants.JMX_PORT));
+                attr.put(Constants.USERNAME, children.getAttribute(Constants.USERNAME));
+                attr.put(Constants.PASSWORD, children.getAttribute(Constants.PASSWORD));
+                ServerInstance instance = ServerInstanceFactory.createServerInstance(new VirgoServerInstanceImplementation(attr, Constants.VIRGO_SERVER_NAME, (String) attr.get(Constants.DISPLAY_NAME), true));
                 instances.add(instance);
             }
         } catch (IOException ex) {
@@ -75,7 +74,7 @@ public class VirgoServerInstanceProvider implements ServerInstanceProvider {
             FileObject instanceFile = virgoConfigRoot.createData("instance" + nextChildrensNum);
             instanceFile.setAttribute(Constants.VIRGO_ROOT, param.get(Constants.VIRGO_ROOT));
             instanceFile.setAttribute(Constants.DISPLAY_NAME, param.get(Constants.DISPLAY_NAME));
-            instanceFile.setAttribute(Constants.JMS_PORT, param.get(Constants.JMS_PORT));
+            instanceFile.setAttribute(Constants.JMX_PORT, param.get(Constants.JMX_PORT));
             instanceFile.setAttribute(Constants.USERNAME, param.get(Constants.USERNAME));
             instanceFile.setAttribute(Constants.PASSWORD, param.get(Constants.PASSWORD));
             changeSupport.fireChange();

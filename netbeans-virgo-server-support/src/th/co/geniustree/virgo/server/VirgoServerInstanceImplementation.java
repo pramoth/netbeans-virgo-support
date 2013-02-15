@@ -4,17 +4,21 @@
  */
 package th.co.geniustree.virgo.server;
 
-import java.util.Map;
+import th.co.geniustree.virgo.server.api.StartCommand;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import org.netbeans.api.server.properties.InstanceProperties;
 import org.netbeans.spi.server.ServerInstanceImplementation;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
 import org.openide.util.Lookup;
+import org.openide.util.lookup.AbstractLookup;
+import org.openide.util.lookup.InstanceContent;
 import org.openide.util.lookup.Lookups;
+import org.openide.util.lookup.ProxyLookup;
+import th.co.geniustree.virgo.server.api.StopCommand;
+import th.co.geniustree.virgo.server.api.VirgoServerAttributes;
 
 /**
  *
@@ -26,13 +30,26 @@ public class VirgoServerInstanceImplementation implements ServerInstanceImplemen
     private final String instanceName;
     private final boolean removable;
     private JPanel customizer;
-    private final Map<String, Object> instanceProps;
+    private final VirgoServerAttributes attr;
+    private  VirgoServerNode virgoServerNode;
+    private final InstanceContent content = new InstanceContent();
+    private final AbstractLookup dynamicLookup;
+    private final ProxyLookup lookup;
+    private final StartCommand startCommand;
+    private final StopCommand stopCommand;
 
-    public VirgoServerInstanceImplementation(Map<String, Object> instanceProps, String serverName, String instanceName, boolean removable) {
+    public VirgoServerInstanceImplementation(VirgoServerAttributes attr, String serverName, String instanceName, boolean removable) {
         this.serverName = serverName;
         this.instanceName = instanceName;
         this.removable = removable;
-        this.instanceProps = instanceProps;
+        this.attr = attr;
+        startCommand = new StartCommand(this);
+        stopCommand = new StopCommand(this);
+        dynamicLookup = new AbstractLookup(content);
+        content.add(startCommand);
+        content.add(stopCommand);
+        lookup = new ProxyLookup(dynamicLookup,Lookups.fixed(attr));
+        virgoServerNode = new VirgoServerNode(this);
     }
 
     @Override
@@ -47,7 +64,7 @@ public class VirgoServerInstanceImplementation implements ServerInstanceImplemen
 
     @Override
     public Node getFullNode() {
-        return new VirgoServerNode(this);
+        return virgoServerNode;
     }
 
     @Override
@@ -83,10 +100,37 @@ public class VirgoServerInstanceImplementation implements ServerInstanceImplemen
 
     @Override
     public Lookup getLookup() {
-        return Lookups.fixed(new StartCommand());
+        return lookup;
     }
 
-    public Map<String, Object> getInstanceProps() {
-        return instanceProps;
+    public VirgoServerAttributes getAttr() {
+        return attr;
+    }
+
+    public VirgoServerNode getVirgoServerNode() {
+        return virgoServerNode;
+    }
+
+    public void starting() {
+        virgoServerNode.starting();
+        content.remove(startCommand);
+        content.remove(stopCommand);
+    }
+
+    public void started() {
+        virgoServerNode.started();
+        content.add(stopCommand);
+    }
+
+    public void stoped() {
+        virgoServerNode.stoped();
+        content.add(startCommand);
+        content.add(stopCommand);
+    }
+
+    public void stoping() {
+        virgoServerNode.stoping();
+        content.remove(startCommand);
+        content.remove(stopCommand);
     }
 }

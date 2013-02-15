@@ -1,5 +1,6 @@
 Manifest-Version: 1.0
 OpenIDE-Module: tho.co.geniustree.virgo.server
+OpenIDE-Module-Install: th/co/geniustree/virgo/server/Installer.class
 OpenIDE-Module-Layer: th/co/geniustree/virgo/server/layer.xml
 OpenIDE-Module-Localizing-Bundle: th/co/geniustree/virgo/server/Bundle.properties
 OpenIDE-Module-Specification-Version: 1.0

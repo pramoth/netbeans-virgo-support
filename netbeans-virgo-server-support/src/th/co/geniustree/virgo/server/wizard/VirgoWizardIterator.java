@@ -5,6 +5,7 @@
 package th.co.geniustree.virgo.server.wizard;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -20,7 +21,7 @@ import org.openide.WizardDescriptor.InstantiatingIterator;
 import org.openide.util.ChangeSupport;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.Lookups;
-import th.co.geniustree.virgo.server.Constants;
+import th.co.geniustree.virgo.server.api.Constants;
 import th.co.geniustree.virgo.server.VirgoServerInstanceImplementation;
 import th.co.geniustree.virgo.server.VirgoServerInstanceProvider;
 import static th.co.geniustree.virgo.server.wizard.VirgoWizardPanel1.*;
@@ -33,22 +34,25 @@ public class VirgoWizardIterator implements InstantiatingIterator {
 
     private VirgoWizardPanel1 panel;
     private Set instances = new HashSet();
-    private ChangeSupport changeSupport =  new ChangeSupport(this);
+    private ChangeSupport changeSupport = new ChangeSupport(this);
     private WizardDescriptor wizard;
 
     @Override
     public Set instantiate() throws IOException {
-        Map<String,Object> param = new HashMap<String,Object>();
-        param.put(Constants.DISPLAY_NAME,(String)wizard.getProperty("ServInstWizard_displayName"));
-        param.put(Constants.VIRGO_ROOT, (String) wizard.getProperty(Constants.VIRGO_ROOT));
-        param.put(Constants.JMS_PORT, (Integer) wizard.getProperty(Constants.JMS_PORT));
-        param.put(Constants.USERNAME, (String) wizard.getProperty(Constants.USERNAME));
-        param.put(Constants.PASSWORD, (String) wizard.getProperty(Constants.PASSWORD));
-        Lookup forPath = Lookups.forPath(Constants.VERGO_SERVER_REGISTER_PATH);
-        VirgoServerInstanceProvider virgoProvider = (VirgoServerInstanceProvider) forPath.lookup(ServerInstanceProvider.class);
-        virgoProvider.addNewServer(param);
-        changeSupport.fireChange();
-        return instances;
+        if (wizard.getValue() == WizardDescriptor.FINISH_OPTION) {
+            Map<String, Object> param = new HashMap<String, Object>();
+            param.put(Constants.DISPLAY_NAME, (String) wizard.getProperty("ServInstWizard_displayName"));
+            param.put(Constants.VIRGO_ROOT, (String) wizard.getProperty(Constants.VIRGO_ROOT));
+            param.put(Constants.JMX_PORT, (Integer) wizard.getProperty(Constants.JMX_PORT));
+            param.put(Constants.USERNAME, (String) wizard.getProperty(Constants.USERNAME));
+            param.put(Constants.PASSWORD, (String) wizard.getProperty(Constants.PASSWORD));
+            Lookup forPath = Lookups.forPath(Constants.VERGO_SERVER_REGISTER_PATH);
+            VirgoServerInstanceProvider virgoProvider = (VirgoServerInstanceProvider) forPath.lookup(ServerInstanceProvider.class);
+            virgoProvider.addNewServer(param);
+            changeSupport.fireChange();
+            return instances;
+        }
+        return Collections.EMPTY_SET;
     }
 
     @Override
@@ -58,7 +62,6 @@ public class VirgoWizardIterator implements InstantiatingIterator {
 
     @Override
     public void uninitialize(WizardDescriptor wizard) {
-        
     }
 
     @Override

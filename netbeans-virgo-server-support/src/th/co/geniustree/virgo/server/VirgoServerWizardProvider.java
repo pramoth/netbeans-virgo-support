@@ -5,6 +5,7 @@
 
 package th.co.geniustree.virgo.server;
 
+import th.co.geniustree.virgo.server.api.Constants;
 import org.netbeans.spi.server.ServerWizardProvider;
 import org.openide.WizardDescriptor;
 import org.openide.util.lookup.ServiceProvider;

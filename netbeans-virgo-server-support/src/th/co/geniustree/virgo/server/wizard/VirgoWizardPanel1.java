@@ -11,7 +11,7 @@ import org.openide.WizardDescriptor;
 import org.openide.WizardValidationException;
 import org.openide.util.ChangeSupport;
 import org.openide.util.HelpCtx;
-import th.co.geniustree.virgo.server.Constants;
+import th.co.geniustree.virgo.server.api.Constants;
 
 public class VirgoWizardPanel1 implements WizardDescriptor.Panel<WizardDescriptor>, WizardDescriptor.ValidatingPanel<WizardDescriptor> {
 
@@ -85,7 +85,7 @@ public class VirgoWizardPanel1 implements WizardDescriptor.Panel<WizardDescripto
             if (component.getVirgoRootFile() != null) {
                 wiz.putProperty(Constants.VIRGO_ROOT, component.getVirgoRootFile().getAbsolutePath());
             }
-            wiz.putProperty(Constants.JMS_PORT, jmxPort);
+            wiz.putProperty(Constants.JMX_PORT, jmxPort);
             wiz.putProperty(Constants.USERNAME, component.getUserName().getText());
             wiz.putProperty(Constants.PASSWORD, password);
         }

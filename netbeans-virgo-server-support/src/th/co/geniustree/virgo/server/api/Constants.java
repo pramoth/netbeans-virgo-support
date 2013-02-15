@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package th.co.geniustree.virgo.server;
+package th.co.geniustree.virgo.server.api;
 
 /**
  *
@@ -15,7 +15,7 @@ public interface Constants {
     String VIRGO_SERVER_NAME = "Virgo Tomcat Server 3.0.6";
     String DISPLAY_NAME = "displayName";
     String VIRGO_ROOT = "virgoRoot";
-    String JMS_PORT = "jmsPort";
+    String JMX_PORT = "jmxPort";
     String USERNAME = "username";
     String PASSWORD = "password";
 }
