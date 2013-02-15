@@ -17,6 +17,7 @@ import org.openide.util.lookup.AbstractLookup;
 import org.openide.util.lookup.InstanceContent;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
+import th.co.geniustree.virgo.server.api.Deployer;
 import th.co.geniustree.virgo.server.api.StopCommand;
 import th.co.geniustree.virgo.server.api.VirgoServerAttributes;
 
@@ -48,7 +49,7 @@ public class VirgoServerInstanceImplementation implements ServerInstanceImplemen
         dynamicLookup = new AbstractLookup(content);
         content.add(startCommand);
         content.add(stopCommand);
-        lookup = new ProxyLookup(dynamicLookup,Lookups.fixed(attr));
+        lookup = new ProxyLookup(dynamicLookup,Lookups.fixed(attr,new Deployer(attr)));
         virgoServerNode = new VirgoServerNode(this);
     }
 

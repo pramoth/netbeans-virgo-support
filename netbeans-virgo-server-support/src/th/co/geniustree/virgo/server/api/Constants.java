@@ -9,6 +9,7 @@ package th.co.geniustree.virgo.server.api;
  * @author pramoth
  */
 public interface Constants {
+    public static final String MBEAN_DEPLOYER = "org.eclipse.virgo.kernel:category=Control,type=Deployer";
 
     String ACTION_VERGO_SERVER = "Actions/Virgo/Server";
     String VERGO_SERVER_REGISTER_PATH = "VirgoServerVTS";
