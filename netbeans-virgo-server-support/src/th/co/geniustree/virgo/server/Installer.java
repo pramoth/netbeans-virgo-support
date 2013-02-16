@@ -11,7 +11,6 @@ import org.openide.modules.ModuleInstall;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.Lookups;
 import th.co.geniustree.virgo.server.api.Constants;
-import th.co.geniustree.virgo.server.api.ServerStatus;
 import th.co.geniustree.virgo.server.api.StopCommand;
 
 public class Installer extends ModuleInstall {
@@ -27,13 +26,14 @@ public class Installer extends ModuleInstall {
         VirgoServerInstanceProvider virgoProvider = (VirgoServerInstanceProvider) forPath.lookup(ServerInstanceProvider.class);
         for (ServerInstance instance : virgoProvider.getInstances()) {
             final StopCommand stopCommand = instance.getLookup().lookup(StopCommand.class);
-            ProgressUtils.showProgressDialogAndRun(new Runnable() {
-
-                @Override
-                public void run() {
-                    stopCommand.stop();
-                }
-            }, "Stop virgo.");
+            if (stopCommand != null) {
+                ProgressUtils.showProgressDialogAndRun(new Runnable() {
+                    @Override
+                    public void run() {
+                        stopCommand.stop();
+                    }
+                }, "Stop virgo.");
+            }
         }
         return true;
     }

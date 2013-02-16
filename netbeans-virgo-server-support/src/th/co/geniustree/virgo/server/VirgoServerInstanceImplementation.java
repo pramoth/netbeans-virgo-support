@@ -4,6 +4,12 @@
  */
 package th.co.geniustree.virgo.server;
 
+import java.util.concurrent.Executors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.management.MBeanServerConnection;
+import javax.management.ObjectName;
+import javax.management.remote.JMXConnector;
 import th.co.geniustree.virgo.server.api.StartCommand;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -32,7 +38,7 @@ public class VirgoServerInstanceImplementation implements ServerInstanceImplemen
     private final boolean removable;
     private JPanel customizer;
     private final VirgoServerAttributes attr;
-    private  VirgoServerNode virgoServerNode;
+    private VirgoServerNode virgoServerNode;
     private final InstanceContent content = new InstanceContent();
     private final AbstractLookup dynamicLookup;
     private final ProxyLookup lookup;
@@ -48,9 +54,34 @@ public class VirgoServerInstanceImplementation implements ServerInstanceImplemen
         stopCommand = new StopCommand(this);
         dynamicLookup = new AbstractLookup(content);
         content.add(startCommand);
-        content.add(stopCommand);
-        lookup = new ProxyLookup(dynamicLookup,Lookups.fixed(attr,new Deployer(attr)));
+        lookup = new ProxyLookup(dynamicLookup, Lookups.fixed(attr, new Deployer(this)));
         virgoServerNode = new VirgoServerNode(this);
+        checkServerStatus();
+    }
+//TODO this methos is Code dup with StartCommand. redesign it.
+
+    private void checkServerStatus() {
+        Executors.newCachedThreadPool().execute(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    try {
+                        Thread.sleep(2000);
+                        JMXConnector createConnector = JmxConnectorHelper.createConnector(attr);
+                        MBeanServerConnection mBeanServerConnection = createConnector.getMBeanServerConnection();
+                        Object attribute = mBeanServerConnection.getAttribute(new ObjectName("org.eclipse.virgo.kernel:type=ArtifactModel,artifact-type=bundle,name=org.eclipse.virgo.management.console,version=3.6.0.RELEASE,region=org.eclipse.virgo.region.user"), "State");
+                        if ("ACTIVE".equals(attribute)) {
+                            started();
+                            JmxConnectorHelper.silentClose(createConnector);
+                            break;
+                        }
+                    } catch (Exception ex) {
+                        Logger.getLogger(this.getClass().getName()).log(Level.INFO, null, ex.getMessage());
+                    }
+                }
+
+            }
+        });
     }
 
     @Override
@@ -120,13 +151,14 @@ public class VirgoServerInstanceImplementation implements ServerInstanceImplemen
 
     public void started() {
         virgoServerNode.started();
+        content.remove(startCommand);
         content.add(stopCommand);
     }
 
     public void stoped() {
         virgoServerNode.stoped();
         content.add(startCommand);
-        content.add(stopCommand);
+        content.remove(stopCommand);
     }
 
     public void stoping() {
