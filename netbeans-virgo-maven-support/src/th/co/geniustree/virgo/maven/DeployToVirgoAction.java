@@ -29,7 +29,7 @@ import org.openide.util.actions.NodeAction;
 @ActionRegistration(displayName = "#CTL_DeployToVirgoAction")
 @ActionReference(path = "Projects/Actions/Virgo")
 @Messages("CTL_DeployToVirgoAction=Virgo")
-public final class DeployToVirgoAction extends NodeAction  {
+public final class DeployToVirgoAction extends NodeAction {
 
     private JMenu root = new JMenu("Virgo");
     private JMenuItem deploy = new JMenuItem("Deploy");
@@ -68,9 +68,14 @@ public final class DeployToVirgoAction extends NodeAction  {
     protected boolean enable(Node[] activatedNodes) {
         if (activatedNodes.length == 1) {
             Project p = activatedNodes[0].getLookup().lookup(Project.class);
-            NbMavenProject mvnProject = p.getLookup().lookup(NbMavenProject.class);
-            root.setVisible(mvnProject != null);
-            return mvnProject != null;
+            boolean visible = false;
+            if (p != null) {
+                NbMavenProject mvnProject = p.getLookup().lookup(NbMavenProject.class);
+                visible = mvnProject != null;
+                root.setVisible(visible);
+            }
+            return visible;
+
         } else {
             root.setVisible(false);
             return false;
@@ -86,7 +91,6 @@ public final class DeployToVirgoAction extends NodeAction  {
     public HelpCtx getHelpCtx() {
         return null;
     }
-
 
     private static final class ContextAction extends AbstractAction {
 
