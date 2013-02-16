@@ -4,28 +4,27 @@
  */
 package th.co.geniustree.virgo.maven;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.io.File;
 import org.netbeans.api.project.Project;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
+import org.openide.util.Exceptions;
 import org.openide.util.NbBundle.Messages;
+import th.co.geniustree.virgo.server.api.Deployer;
 
-@ActionID(category = "Project",id = "th.co.geniustree.virgo.maven.RefreshAction")
+@ActionID(category = "Project", id = "th.co.geniustree.virgo.maven.RefreshAction")
 @ActionRegistration(displayName = "#CTL_RefreshAction")
 @ActionReference(path = "Actions/Virgo/Refresh")
 @Messages("CTL_RefreshAction=Refresh")
-public final class RefreshAction implements ActionListener {
-
-    private final Project context;
+public final class RefreshAction extends DeployActionBase {
 
     public RefreshAction(Project context) {
-        this.context = context;
+        super(context);
     }
 
     @Override
-    public void actionPerformed(ActionEvent ev) {
-        System.out.println("refresh"+context);
+    public void doOperation(Deployer deployer, File finalFile,String synbolicName, String bundleVersion, boolean recover) throws Exception {
+        deployer.refresh(finalFile, bundleVersion);
     }
 }

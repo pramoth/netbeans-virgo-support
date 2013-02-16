@@ -6,11 +6,13 @@ package th.co.geniustree.virgo.maven;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import org.netbeans.api.project.Project;
 import org.openide.awt.ActionID;
 import org.openide.awt.ActionReference;
 import org.openide.awt.ActionRegistration;
 import org.openide.util.NbBundle.Messages;
+import th.co.geniustree.virgo.server.api.Deployer;
 
 /**
  *
@@ -21,16 +23,14 @@ import org.openide.util.NbBundle.Messages;
 @ActionRegistration(displayName = "#CTL_UndeployAction")
 @ActionReference(path = "Actions/Virgo/Undeploy", position = 0)
 @Messages("CTL_UndeployAction=Undeploy")
-public final class UndeployAction implements ActionListener {
-
-    private final Project context;
+public final class UndeployAction extends DeployActionBase  {
 
     public UndeployAction(Project context) {
-        this.context = context;
+        super(context);
     }
 
     @Override
-    public void actionPerformed(ActionEvent ev) {
-        // TODO use context
+    public void doOperation(Deployer deployer, File finalFile,String synbolicName, String bundleVersion, boolean recover) throws Exception {
+        deployer.undeploy(synbolicName, bundleVersion);
     }
 }

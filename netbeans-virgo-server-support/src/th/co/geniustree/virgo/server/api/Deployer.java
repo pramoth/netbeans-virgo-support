@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.management.MBeanServerConnection;
+import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import javax.management.remote.JMXConnector;
 import javax.swing.SwingUtilities;
@@ -27,11 +28,10 @@ public class Deployer {
         this.instance = instance;
     }
 
-    public void deploy(File file, boolean whatIsName) throws Exception {
+    public void deploy(File file, boolean recoverable) throws Exception {
         if (SwingUtilities.isEventDispatchThread()) {
-            throw new IllegalStateException("Ca'nt call in EDT.");
+            throw new IllegalStateException("Can't call in EDT.");
         }
-        System.out.println("call deploy to path " + file.toURI());
         JMXConnector connector = null;
         try {
             connector = JmxConnectorHelper.createConnector(instance.getAttr());
@@ -45,25 +45,73 @@ public class Deployer {
             try {
                 MBeanServerConnection mBeanServerConnection = connector.getMBeanServerConnection();
                 ObjectName name = new ObjectName(Constants.MBEAN_DEPLOYER);
-                Object[] params = {file.toURI().toString(), true};
-                System.out.println("deploy => " + file.toURI().toString());
+                Object[] params = {file.toURI().toString(), recoverable};
+                Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Deploy {0} ", new String[]{file.toURI().toString()});
                 String[] signature = {"java.lang.String", "boolean"};
-                // invoke the deploy method of the Deployer MBean
+                // invoke the execute method of the Deployer MBean
                 mBeanServerConnection.invoke(name, "deploy", params, signature);
             } catch (Exception ex) {
-                Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Can't connect Virgo JMX.",ex);
+                Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Can't connect Virgo JMX.", ex);
                 instance.stoped();
-            }finally{
+            } finally {
                 JmxConnectorHelper.silentClose(connector);
             }
-        }else{
+        } else {
             Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Can't connect Virgo JMX.");
         }
     }
 
-    public void undeploy() {
+    public void undeploy(String simbolicname,String bundleVersion) {
+        if (SwingUtilities.isEventDispatchThread()) {
+            throw new IllegalStateException("Ca'nt call in EDT.");
+        }
+        JMXConnector connector = null;
+        try {
+            connector = JmxConnectorHelper.createConnector(instance.getAttr());
+            MBeanServerConnection mBeanServerConnection = connector.getMBeanServerConnection();
+            ObjectName name = new ObjectName(Constants.MBEAN_DEPLOYER);
+            Object[] params = {simbolicname, bundleVersion};
+            Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Undeploy  {0} ;version={1}", new String[]{simbolicname, bundleVersion});
+            String[] signature = {"java.lang.String", "java.lang.String"};
+            try {
+                // invoke the execute method of the Deployer MBean
+                mBeanServerConnection.invoke(name, "refresh", params, signature);
+            } catch (Exception ex) {
+                Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Can't refresh bundle {0} ;version={1}", new String[]{simbolicname, bundleVersion});
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Can't connect Virgo JMX.", ex);
+        } catch (MalformedObjectNameException me) {
+            Logger.getLogger(this.getClass().getName()).log(Level.INFO, me.getMessage(), me);
+        } finally {
+            JmxConnectorHelper.silentClose(connector);
+        }
     }
 
-    public void refresh() {
+    public void refresh(File file, String bundleVersion) {
+        if (SwingUtilities.isEventDispatchThread()) {
+            throw new IllegalStateException("Ca'nt call in EDT.");
+        }
+        JMXConnector connector = null;
+        try {
+            connector = JmxConnectorHelper.createConnector(instance.getAttr());
+            MBeanServerConnection mBeanServerConnection = connector.getMBeanServerConnection();
+            ObjectName name = new ObjectName(Constants.MBEAN_DEPLOYER);
+            Object[] params = {file.toURI().toString(), bundleVersion};
+            Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Refresh {0} ;version={1}", new String[]{file.toURI().toString(), bundleVersion});
+            String[] signature = {"java.lang.String", "java.lang.String"};
+            try {
+                // invoke the execute method of the Deployer MBean
+                mBeanServerConnection.invoke(name, "refresh", params, signature);
+            } catch (Exception ex) {
+                Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Can't refresh bundle {0} ;version={1}", new String[]{file.toURI().toString(), bundleVersion});
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Can't connect Virgo JMX.", ex);
+        } catch (MalformedObjectNameException me) {
+            Logger.getLogger(this.getClass().getName()).log(Level.INFO, me.getMessage(), me);
+        } finally {
+            JmxConnectorHelper.silentClose(connector);
+        }
     }
 }
