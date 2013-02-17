@@ -35,8 +35,7 @@ public class VirgoServerInstanceProvider implements ServerInstanceProvider {
     private List<ServerInstance> instances = new ArrayList<ServerInstance>();
     private FileObject virgoConfigRoot;
 
-    @Override
-    public List<ServerInstance> getInstances() {
+    public VirgoServerInstanceProvider() {
         FileObject serverConfigRoot = FileUtil.getConfigFile("Servers");
         try {
             virgoConfigRoot = FileUtil.createFolder(serverConfigRoot, "Virgo");
@@ -55,6 +54,11 @@ public class VirgoServerInstanceProvider implements ServerInstanceProvider {
         } catch (IOException ex) {
             Exceptions.printStackTrace(ex);
         }
+    }
+    
+
+    @Override
+    public List<ServerInstance> getInstances() {
         return instances;
     }
 

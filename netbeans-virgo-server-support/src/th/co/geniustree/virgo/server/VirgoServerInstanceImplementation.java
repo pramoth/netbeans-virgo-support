@@ -73,11 +73,13 @@ public class VirgoServerInstanceImplementation implements ServerInstanceImplemen
                         if ("ACTIVE".equals(attribute)) {
                             started();
                             JmxConnectorHelper.silentClose(createConnector);
-                            break;
                         }
                     } catch (Exception ex) {
-                        Logger.getLogger(this.getClass().getName()).log(Level.INFO, null, ex.getMessage());
+                        Logger.getLogger(this.getClass().getName()).log(Level.INFO, Thread.currentThread() + " Connect Virgo server fail.");
+                    } finally {
+                        break;
                     }
+
                 }
 
             }

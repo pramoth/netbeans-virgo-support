@@ -75,9 +75,9 @@ public class Deployer {
             String[] signature = {"java.lang.String", "java.lang.String"};
             try {
                 // invoke the execute method of the Deployer MBean
-                mBeanServerConnection.invoke(name, "refresh", params, signature);
+                mBeanServerConnection.invoke(name, "undeploy", params, signature);
             } catch (Exception ex) {
-                Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Can't refresh bundle {0} ;version={1}", new String[]{simbolicname, bundleVersion});
+                Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Can't undeploy bundle {0} ;version={1}", new String[]{simbolicname, bundleVersion});
             }
         } catch (IOException ex) {
             Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Can't connect Virgo JMX.", ex);
