@@ -125,7 +125,7 @@
                     </run-dependency>
                 </dependency>
                 <dependency>
-                    <code-name-base>tho.co.geniustree.virgo.server</code-name-base>
+                    <code-name-base>th.co.geniustree.virgo.server</code-name-base>
                     <build-prerequisite/>
                     <compile-dependency/>
                     <run-dependency>
