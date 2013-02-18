@@ -30,7 +30,7 @@ public final class UndeployAction extends DeployActionBase  {
     }
 
     @Override
-    public void doOperation(Deployer deployer, File finalFile,String synbolicName, String bundleVersion, boolean recover) throws Exception {
-        deployer.undeploy(synbolicName, bundleVersion);
+    public void doOperation(Deployer deployer, File finalFile,String symbolicName, String bundleVersion, boolean recover) throws Exception {
+        deployer.undeploy(symbolicName, bundleVersion);
     }
 }
