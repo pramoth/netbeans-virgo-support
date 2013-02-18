@@ -4,6 +4,8 @@
  */
 package th.co.geniustree.virgo.maven;
 
+import java.awt.EventQueue;
+import th.co.geniustree.virgo.server.api.ServerInstanceProviderUtils;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -22,17 +24,13 @@ import org.netbeans.api.progress.ProgressHandleFactory;
 import org.netbeans.api.project.Project;
 import org.netbeans.api.server.ServerInstance;
 import org.netbeans.modules.maven.api.NbMavenProject;
-import org.netbeans.modules.maven.api.PluginPropertyUtils;
 import org.netbeans.modules.maven.api.execute.RunConfig;
 import org.netbeans.modules.maven.api.execute.RunUtils;
 import org.netbeans.spi.server.ServerInstanceProvider;
 import org.openide.execution.ExecutorTask;
 import org.openide.util.Exceptions;
-import org.openide.util.Lookup;
 import org.openide.util.Task;
 import org.openide.util.TaskListener;
-import org.openide.util.lookup.Lookups;
-import th.co.geniustree.virgo.server.api.Constants;
 import th.co.geniustree.virgo.server.api.Deployer;
 
 /**
@@ -68,11 +66,17 @@ public abstract class DeployActionBase implements ActionListener {
             task.addTaskListener(new TaskListener() {
                 @Override
                 public void taskFinished(Task task) {
-                    try {
-                        executeDeployTask(mavenProject, finalFile);
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
-                    }
+                    System.out.println("taskFinished thread is " + Thread.currentThread());
+                    EventQueue.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                executeDeployTask(mavenProject, finalFile);
+                            } catch (IOException ex) {
+                                ex.printStackTrace();
+                            }
+                        }
+                    });
                 }
             });
         } else {
@@ -82,41 +86,45 @@ public abstract class DeployActionBase implements ActionListener {
 
     public abstract void doOperation(Deployer deployer, File finalFile, String symbolicName, String bundleVersion, boolean recover) throws Exception;
 
-    private void executeDeployTask(MavenProject mavenProject,final File finalFile) throws IOException {
+    private void executeDeployTask(MavenProject mavenProject, final File finalFile) throws IOException {
         final String symbolicName = BundleUtils.getSymbolicName(mavenProject);
         final String bundleVersion = BundleUtils.getBundleVersion(finalFile);
-        Lookup forPath = Lookups.forPath(Constants.VERGO_SERVER_REGISTER_PATH);
-        ServerInstanceProvider virgoProvider = forPath.lookup(ServerInstanceProvider.class);
+        ServerInstanceProvider virgoProvider = ServerInstanceProviderUtils.getVirgoServerInstanceProvider();
         if (virgoProvider != null) {
             List<ServerInstance> instances = virgoProvider.getInstances();
-            if (instances.size() > 0) {
-                final Deployer deployer = instances.get(0).getLookup().lookup(Deployer.class);
-                try {
-                    final ProgressHandle handle = ProgressHandleFactory.createHandle("Deploy " + mavenProject.getBuild().getFinalName());
-                    SwingWorker worker = new SwingWorker<Object, Object>() {
-                        @Override
-                        protected Object doInBackground() throws Exception {
-                            handle.start();
-                            doOperation(deployer, finalFile, symbolicName, bundleVersion, true);
-                            return null;
-                        }
+            if (instances.isEmpty()) {
+                ServerInstanceProviderUtils.openWizard();
+            }
+            //User may be cancle wizard.
+            if (instances.isEmpty()) {
+                return;
+            }
+            final Deployer deployer = instances.get(0).getLookup().lookup(Deployer.class);
+            try {
+                final ProgressHandle handle = ProgressHandleFactory.createHandle("Deploy " + mavenProject.getBuild().getFinalName());
+                SwingWorker worker = new SwingWorker<Object, Object>() {
+                    @Override
+                    protected Object doInBackground() throws Exception {
+                        handle.start();
+                        doOperation(deployer, finalFile, symbolicName, bundleVersion, true);
+                        return null;
+                    }
 
-                        @Override
-                        protected void done() {
-                            try {
-                                get();
-                                handle.finish();
-                            } catch (InterruptedException ex) {
-                                Exceptions.printStackTrace(ex);
-                            } catch (ExecutionException ex) {
-                                Exceptions.printStackTrace(ex);
-                            }
+                    @Override
+                    protected void done() {
+                        try {
+                            get();
+                            handle.finish();
+                        } catch (InterruptedException ex) {
+                            Exceptions.printStackTrace(ex);
+                        } catch (ExecutionException ex) {
+                            Exceptions.printStackTrace(ex);
                         }
-                    };
-                    worker.execute();
-                } catch (Exception ex) {
-                    Exceptions.printStackTrace(ex);
-                }
+                    }
+                };
+                worker.execute();
+            } catch (Exception ex) {
+                Exceptions.printStackTrace(ex);
             }
         }
     }

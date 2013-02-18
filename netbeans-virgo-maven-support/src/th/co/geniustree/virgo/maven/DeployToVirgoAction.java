@@ -37,12 +37,6 @@ public final class DeployToVirgoAction extends NodeAction {
     private JMenuItem refresh = new JMenuItem("Refresh");
 
     public DeployToVirgoAction() {
-        root.add(deploy);
-        deploy.setAction(Utilities.actionsForPath("Actions/Virgo/Deploy").get(0));
-        root.add(undeploy);
-        undeploy.setAction(Utilities.actionsForPath("Actions/Virgo/Undeploy").get(0));
-        root.add(refresh);
-        refresh.setAction(Utilities.actionsForPath("Actions/Virgo/Refresh").get(0));
     }
 
     @Override
@@ -52,7 +46,15 @@ public final class DeployToVirgoAction extends NodeAction {
 
     @Override
     public JMenuItem getPopupPresenter() {
-        return root; //To change body of generated methods, choose Tools | Templates. //To change body of generated methods, choose Tools | Templates.
+        if (root.getMenuComponents().length == 0) {
+            root.add(deploy);
+            deploy.setAction(Utilities.actionsForPath("Actions/Virgo/Deploy").get(0));
+            root.add(undeploy);
+            undeploy.setAction(Utilities.actionsForPath("Actions/Virgo/Undeploy").get(0));
+            root.add(refresh);
+            refresh.setAction(Utilities.actionsForPath("Actions/Virgo/Refresh").get(0));
+        }
+        return root;
     }
 
     @Override
