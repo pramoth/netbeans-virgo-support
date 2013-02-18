@@ -5,10 +5,8 @@
 package th.co.geniustree.virgo.server.api;
 
 import java.awt.EventQueue;
-import java.lang.reflect.InvocationTargetException;
 import org.netbeans.api.server.CommonServerUIs;
 import org.netbeans.spi.server.ServerInstanceProvider;
-import org.openide.util.Exceptions;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.Lookups;
 

@@ -19,6 +19,7 @@ import org.openide.util.ChangeSupport;
 import org.openide.util.Exceptions;
 import org.openide.util.lookup.ServiceProvider;
 import org.openide.util.lookup.ServiceProviders;
+import th.co.geniustree.virgo.server.api.StopCommand;
 import th.co.geniustree.virgo.server.api.VirgoServerAttributes;
 
 /**
@@ -48,7 +49,6 @@ public class VirgoServerInstanceProvider implements ServerInstanceProvider {
             Exceptions.printStackTrace(ex);
         }
     }
-    
 
     @Override
     public List<ServerInstance> getInstances() {
@@ -83,12 +83,34 @@ public class VirgoServerInstanceProvider implements ServerInstanceProvider {
 
     private void createServerInstance(FileObject instanceFile) {
         VirgoServerAttributes attr = new VirgoServerAttributes();
+        attr.put(Constants.INSTANCE_FILE_NAME, instanceFile.getName());
         attr.put(Constants.VIRGO_ROOT, instanceFile.getAttribute(Constants.VIRGO_ROOT));
         attr.put(Constants.DISPLAY_NAME, instanceFile.getAttribute(Constants.DISPLAY_NAME));
         attr.put(Constants.JMX_PORT, instanceFile.getAttribute(Constants.JMX_PORT));
         attr.put(Constants.USERNAME, instanceFile.getAttribute(Constants.USERNAME));
         attr.put(Constants.PASSWORD, instanceFile.getAttribute(Constants.PASSWORD));
-        ServerInstance instance = ServerInstanceFactory.createServerInstance(new VirgoServerInstanceImplementation(attr, Constants.VIRGO_SERVER_NAME, (String) attr.get(Constants.DISPLAY_NAME), true));
+        VirgoServerInstanceImplementation virgoServerInstanceImplementation = new VirgoServerInstanceImplementation(attr, Constants.VIRGO_SERVER_NAME, (String) attr.get(Constants.DISPLAY_NAME), true);
+        ServerInstance instance = ServerInstanceFactory.createServerInstance(virgoServerInstanceImplementation);
+        virgoServerInstanceImplementation.addServerInstanceToLookup(instance);
         instances.add(instance);
+    }
+
+    public void remove(ServerInstance instance) {
+        VirgoServerAttributes attr = instance.getLookup().lookup(VirgoServerAttributes.class);
+        if (attr != null) {
+            FileObject fileObject = virgoConfigRoot.getFileObject((String) attr.get(Constants.INSTANCE_FILE_NAME));
+            try {
+                fileObject.delete();
+                instances.remove(instance);
+                changeSupport.fireChange();
+                StopCommand stopCommand = instance.getLookup().lookup(StopCommand.class);
+                if (stopCommand != null) {
+                    stopCommand.stop();
+                }
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+
+        }
     }
 }

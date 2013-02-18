@@ -4,6 +4,7 @@
  */
 package th.co.geniustree.virgo.server;
 
+import java.util.Collections;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,7 +15,9 @@ import th.co.geniustree.virgo.server.api.StartCommand;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import org.netbeans.api.server.ServerInstance;
 import org.netbeans.spi.server.ServerInstanceImplementation;
+import org.netbeans.spi.server.ServerInstanceProvider;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.nodes.Node;
@@ -24,6 +27,7 @@ import org.openide.util.lookup.InstanceContent;
 import org.openide.util.lookup.Lookups;
 import org.openide.util.lookup.ProxyLookup;
 import th.co.geniustree.virgo.server.api.Deployer;
+import th.co.geniustree.virgo.server.api.ServerInstanceProviderUtils;
 import th.co.geniustree.virgo.server.api.StopCommand;
 import th.co.geniustree.virgo.server.api.VirgoServerAttributes;
 
@@ -44,6 +48,7 @@ public class VirgoServerInstanceImplementation implements ServerInstanceImplemen
     private final ProxyLookup lookup;
     private final StartCommand startCommand;
     private final StopCommand stopCommand;
+    private final VirgoServerBasicNode virgoServerBasicNode;
 
     public VirgoServerInstanceImplementation(VirgoServerAttributes attr, String serverName, String instanceName, boolean removable) {
         this.serverName = serverName;
@@ -56,6 +61,7 @@ public class VirgoServerInstanceImplementation implements ServerInstanceImplemen
         content.add(startCommand);
         lookup = new ProxyLookup(dynamicLookup, Lookups.fixed(attr, new Deployer(this)));
         virgoServerNode = new VirgoServerNode(this);
+        virgoServerBasicNode = new VirgoServerBasicNode(this);
         checkServerStatus();
     }
 //TODO this methos is Code dup with StartCommand. redesign it.
@@ -103,12 +109,7 @@ public class VirgoServerInstanceImplementation implements ServerInstanceImplemen
 
     @Override
     public Node getBasicNode() {
-        return new AbstractNode(Children.LEAF) {
-            @Override
-            public String getDisplayName() {
-                return instanceName;
-            }
-        };
+        return virgoServerBasicNode;
     }
 
     @Override
@@ -124,7 +125,7 @@ public class VirgoServerInstanceImplementation implements ServerInstanceImplemen
 
     @Override
     public void remove() {
-        System.out.println("remove call");
+        content.set(Collections.EMPTY_LIST, null);
     }
 
     @Override
@@ -167,5 +168,9 @@ public class VirgoServerInstanceImplementation implements ServerInstanceImplemen
         virgoServerNode.stoping();
         content.remove(startCommand);
         content.remove(stopCommand);
+    }
+
+    void addServerInstanceToLookup(ServerInstance instance) {
+        content.add(instance);
     }
 }
