@@ -24,6 +24,7 @@ import org.openide.util.lookup.Lookups;
 import th.co.geniustree.virgo.server.api.Constants;
 import th.co.geniustree.virgo.server.VirgoServerInstanceImplementation;
 import th.co.geniustree.virgo.server.VirgoServerInstanceProvider;
+import th.co.geniustree.virgo.server.api.ServerInstanceProviderUtils;
 import static th.co.geniustree.virgo.server.wizard.VirgoWizardPanel1.*;
 
 /**
@@ -46,8 +47,7 @@ public class VirgoWizardIterator implements InstantiatingIterator {
             param.put(Constants.JMX_PORT, (Integer) wizard.getProperty(Constants.JMX_PORT));
             param.put(Constants.USERNAME, (String) wizard.getProperty(Constants.USERNAME));
             param.put(Constants.PASSWORD, (String) wizard.getProperty(Constants.PASSWORD));
-            Lookup forPath = Lookups.forPath(Constants.VERGO_SERVER_REGISTER_PATH);
-            VirgoServerInstanceProvider virgoProvider = (VirgoServerInstanceProvider) forPath.lookup(ServerInstanceProvider.class);
+            VirgoServerInstanceProvider virgoProvider = (VirgoServerInstanceProvider) ServerInstanceProviderUtils.getVirgoServerInstanceProvider();
             virgoProvider.addNewServer(param);
             changeSupport.fireChange();
             return instances;

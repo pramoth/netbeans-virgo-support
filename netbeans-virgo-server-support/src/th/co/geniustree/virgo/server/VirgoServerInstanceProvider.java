@@ -42,14 +42,7 @@ public class VirgoServerInstanceProvider implements ServerInstanceProvider {
             FileObject[] childrens = virgoConfigRoot.getChildren();
             instances.clear();
             for (FileObject children : childrens) {
-                VirgoServerAttributes attr = new VirgoServerAttributes();
-                attr.put(Constants.VIRGO_ROOT, children.getAttribute(Constants.VIRGO_ROOT));
-                attr.put(Constants.DISPLAY_NAME, children.getAttribute(Constants.DISPLAY_NAME));
-                attr.put(Constants.JMX_PORT, children.getAttribute(Constants.JMX_PORT));
-                attr.put(Constants.USERNAME, children.getAttribute(Constants.USERNAME));
-                attr.put(Constants.PASSWORD, children.getAttribute(Constants.PASSWORD));
-                ServerInstance instance = ServerInstanceFactory.createServerInstance(new VirgoServerInstanceImplementation(attr, Constants.VIRGO_SERVER_NAME, (String) attr.get(Constants.DISPLAY_NAME), true));
-                instances.add(instance);
+                createServerInstance(children);
             }
         } catch (IOException ex) {
             Exceptions.printStackTrace(ex);
@@ -81,9 +74,21 @@ public class VirgoServerInstanceProvider implements ServerInstanceProvider {
             instanceFile.setAttribute(Constants.JMX_PORT, param.get(Constants.JMX_PORT));
             instanceFile.setAttribute(Constants.USERNAME, param.get(Constants.USERNAME));
             instanceFile.setAttribute(Constants.PASSWORD, param.get(Constants.PASSWORD));
+            createServerInstance(instanceFile);
             changeSupport.fireChange();
         } catch (IOException ex) {
             Exceptions.printStackTrace(ex);
         }
+    }
+
+    private void createServerInstance(FileObject instanceFile) {
+        VirgoServerAttributes attr = new VirgoServerAttributes();
+        attr.put(Constants.VIRGO_ROOT, instanceFile.getAttribute(Constants.VIRGO_ROOT));
+        attr.put(Constants.DISPLAY_NAME, instanceFile.getAttribute(Constants.DISPLAY_NAME));
+        attr.put(Constants.JMX_PORT, instanceFile.getAttribute(Constants.JMX_PORT));
+        attr.put(Constants.USERNAME, instanceFile.getAttribute(Constants.USERNAME));
+        attr.put(Constants.PASSWORD, instanceFile.getAttribute(Constants.PASSWORD));
+        ServerInstance instance = ServerInstanceFactory.createServerInstance(new VirgoServerInstanceImplementation(attr, Constants.VIRGO_SERVER_NAME, (String) attr.get(Constants.DISPLAY_NAME), true));
+        instances.add(instance);
     }
 }

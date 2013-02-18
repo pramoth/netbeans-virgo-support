@@ -104,7 +104,7 @@ public class StartCommand {
                             return createConnector;
                         }
                     } catch (Exception ex) {
-                        Logger.getLogger(this.getClass().getName()).log(Level.INFO, ex.getMessage(), ex);
+                        Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Can't call JMX reason = {0}",ex.getMessage());
                         JmxConnectorHelper.silentClose(createConnector);
                     }
                 }
