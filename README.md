@@ -7,4 +7,4 @@ Note that this plugin is beta quality.
 
 Help me improve this plugin,If you use Netbeans and Virgo (VTS) develop an enterprise application.
 
-Download this SNAPSHOT version http://geniustree.co.th/files/virgo/th-co-geniustree-virgo-maven.nbm and http://geniustree.co.th/files/virgo/tho-co-geniustree-virgo-server.nbm
+Download this SNAPSHOT version http://geniustree.co.th/files/virgo/th-co-geniustree-virgo-maven.nbm and http://geniustree.co.th/files/virgo/th-co-geniustree-virgo-server.nbm
