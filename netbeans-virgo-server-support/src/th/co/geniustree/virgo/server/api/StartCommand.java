@@ -6,6 +6,7 @@ package th.co.geniustree.virgo.server.api;
 
 import java.io.File;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -17,6 +18,7 @@ import javax.management.remote.JMXConnector;
 import org.netbeans.api.extexecution.ExecutionDescriptor;
 import org.netbeans.api.extexecution.ExecutionService;
 import org.netbeans.api.extexecution.ExternalProcessBuilder;
+import org.openide.util.Exceptions;
 import th.co.geniustree.virgo.server.JmxConnectorHelper;
 import th.co.geniustree.virgo.server.VirgoServerInstanceImplementation;
 
@@ -69,10 +71,18 @@ public class StartCommand {
         Executors.newCachedThreadPool().execute(new Runnable() {
             @Override
             public void run() {
+                int tryNumber = 10;
                 while (true) {
+                    JMXConnector createConnector = null;
                     try {
-                        Thread.sleep(2000);
-                        JMXConnector createConnector = JmxConnectorHelper.createConnector(instance.getAttr());
+                        Thread.sleep(3000);
+                        if (tryNumber < 1) {
+                            Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Can't check server status.");
+                            instance.stoped();
+                            break;
+                        }
+                        tryNumber--;
+                        createConnector = JmxConnectorHelper.createConnector(instance.getAttr());
                         MBeanServerConnection mBeanServerConnection = createConnector.getMBeanServerConnection();
                         Object attribute = mBeanServerConnection.getAttribute(new ObjectName("org.eclipse.virgo.kernel:type=ArtifactModel,artifact-type=bundle,name=org.eclipse.virgo.management.console,version=3.6.0.RELEASE,region=org.eclipse.virgo.region.user"), "State");
                         if ("ACTIVE".equals(attribute)) {
@@ -81,7 +91,8 @@ public class StartCommand {
                             break;
                         }
                     } catch (Exception ex) {
-                        Logger.getLogger(this.getClass().getName()).log(Level.INFO, ex.getMessage(), ex);
+                        Logger.getLogger(this.getClass().getName()).log(Level.INFO, ex.getMessage());
+                        JmxConnectorHelper.silentClose(createConnector);
                     }
                 }
             }
@@ -104,7 +115,7 @@ public class StartCommand {
                             return createConnector;
                         }
                     } catch (Exception ex) {
-                        Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Can't call JMX reason = {0}",ex.getMessage());
+                        Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Can't call JMX reason = {0}", ex.getMessage());
                         JmxConnectorHelper.silentClose(createConnector);
                     }
                 }
@@ -128,6 +139,18 @@ public class StartCommand {
             processBuilder = processBuilder.addArgument("-clean");
         }
         final ExecutionService service = ExecutionService.newService(processBuilder, descriptor, "Virgo");
-        Future<Integer> task = service.run();
+        final Future<Integer> task = service.run();
+        Executors.newCachedThreadPool().execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    task.get();
+                } catch (Exception ex) {
+                    Logger.getLogger(this.getClass().getName()).log(Level.INFO, ex.getMessage());
+                }
+                Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Virgo stopped.");
+                instance.stoped();
+            }
+        });
     }
 }
