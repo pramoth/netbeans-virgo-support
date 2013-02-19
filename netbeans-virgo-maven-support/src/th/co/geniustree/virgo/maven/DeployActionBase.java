@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.logging.Logger;
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanException;
 import javax.management.MalformedObjectNameException;
@@ -60,28 +61,23 @@ public abstract class DeployActionBase implements ActionListener {
         final File baseDir = mavenProject.getBasedir();
         String finalFileName = "target/" + mavenProject.getBuild().getFinalName() + ".jar";
         final File finalFile = new File(baseDir, finalFileName);
-        if (!finalFile.exists()) {
-            RunConfig createRunConfig = RunUtils.createRunConfig(mavenProject.getBasedir(), context, finalFileName, Arrays.asList("package"));
-            ExecutorTask task = RunUtils.run(createRunConfig);
-            task.addTaskListener(new TaskListener() {
-                @Override
-                public void taskFinished(Task task) {
-                    System.out.println("taskFinished thread is " + Thread.currentThread());
-                    EventQueue.invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                executeDeployTask(mavenProject, finalFile);
-                            } catch (IOException ex) {
-                                ex.printStackTrace();
-                            }
+        RunConfig createRunConfig = RunUtils.createRunConfig(mavenProject.getBasedir(), context, finalFileName, Arrays.asList("package"));
+        ExecutorTask task = RunUtils.run(createRunConfig);
+        task.addTaskListener(new TaskListener() {
+            @Override
+            public void taskFinished(Task task) {
+                EventQueue.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            executeDeployTask(mavenProject, finalFile);
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
                         }
-                    });
-                }
-            });
-        } else {
-            executeDeployTask(mavenProject, finalFile);
-        }
+                    }
+                });
+            }
+        });
     }
 
     public abstract void doOperation(Deployer deployer, File finalFile, String symbolicName, String bundleVersion, boolean recover) throws Exception;
