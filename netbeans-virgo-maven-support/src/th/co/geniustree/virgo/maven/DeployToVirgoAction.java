@@ -32,9 +32,9 @@ import org.openide.util.actions.NodeAction;
 public final class DeployToVirgoAction extends NodeAction {
 
     private JMenu root = new JMenu("Virgo");
-    private JMenuItem deploy = new JMenuItem("Deploy");
-    private JMenuItem undeploy = new JMenuItem("Undeploy");
-    private JMenuItem refresh = new JMenuItem("Refresh");
+    private JMenuItem deploy = new JMenuItem();
+    private JMenuItem undeploy = new JMenuItem();
+    private JMenuItem refresh = new JMenuItem();
 
     public DeployToVirgoAction() {
     }
