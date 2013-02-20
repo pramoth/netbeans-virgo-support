@@ -91,7 +91,8 @@ public class StartCommand {
                             break;
                         }
                     } catch (Exception ex) {
-                        Logger.getLogger(this.getClass().getName()).log(Level.INFO, ex.getMessage());
+                        ex.printStackTrace();
+                        Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Can't call JMX reason = {0}", ex.getMessage());
                         JmxConnectorHelper.silentClose(createConnector);
                     }
                 }
@@ -103,7 +104,7 @@ public class StartCommand {
         Future<JMXConnector> future = Executors.newCachedThreadPool().submit(new Callable<JMXConnector>() {
             @Override
             public JMXConnector call() {
-                while (true) {
+                while (!Thread.currentThread().isInterrupted()) {
                     JMXConnector createConnector = null;
                     try {
                         Thread.sleep(2000);
@@ -119,12 +120,14 @@ public class StartCommand {
                         JmxConnectorHelper.silentClose(createConnector);
                     }
                 }
+                 return null;
             }
         });
         try {
             return future.get(120, TimeUnit.SECONDS);
         } catch (Exception ex) {
             Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Can't start Virgo.", ex);
+            future.cancel(true);
             return null;
         }
     }
