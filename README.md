@@ -10,4 +10,4 @@ Help me improve this plugin,If you use Netbeans and Virgo (VTS) develop an enter
 
 Download this SNAPSHOT version http://geniustree.co.th/files/virgo/th-co-geniustree-virgo-maven.nbm and http://geniustree.co.th/files/virgo/th-co-geniustree-virgo-server.nbm
 
-Or add update site URL http://geniustree.co.th/files/virgo/updatesites.xml
+Or add update site URL http://geniustree.co.th/files/virgo/updates.xml
