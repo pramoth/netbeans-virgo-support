@@ -4,7 +4,6 @@
  */
 package th.co.geniustree.virgo.server;
 
-import java.util.Collections;
 import java.util.concurrent.Executors;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -13,13 +12,9 @@ import javax.management.ObjectName;
 import javax.management.remote.JMXConnector;
 import th.co.geniustree.virgo.server.api.StartCommand;
 import javax.swing.JComponent;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import org.netbeans.api.server.ServerInstance;
 import org.netbeans.spi.server.ServerInstanceImplementation;
-import org.netbeans.spi.server.ServerInstanceProvider;
-import org.openide.nodes.AbstractNode;
-import org.openide.nodes.Children;
 import org.openide.nodes.Node;
 import org.openide.util.Lookup;
 import org.openide.util.lookup.AbstractLookup;
@@ -116,8 +111,7 @@ public class VirgoServerInstanceImplementation implements ServerInstanceImplemen
     public JComponent getCustomizer() {
         synchronized (this) {
             if (customizer == null) {
-                customizer = new JPanel();
-                customizer.add(new JLabel(instanceName));
+                customizer = new VirgoInstanceCustomizer(this);
             }
             return customizer;
         }
@@ -125,7 +119,8 @@ public class VirgoServerInstanceImplementation implements ServerInstanceImplemen
 
     @Override
     public void remove() {
-        content.set(Collections.EMPTY_LIST, null);
+        VirgoServerInstanceProvider virgoServerInstanceProvider = (VirgoServerInstanceProvider) ServerInstanceProviderUtils.getVirgoServerInstanceProvider();
+        virgoServerInstanceProvider.remove(getLookup().lookup(ServerInstance.class));
     }
 
     @Override
