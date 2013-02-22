@@ -61,7 +61,7 @@ public class Deployer {
         }
     }
 
-    public void undeploy(String simbolicname,String bundleVersion) {
+    public void undeploy(String simbolicname, String bundleVersion) {
         if (SwingUtilities.isEventDispatchThread()) {
             throw new IllegalStateException("Ca'nt call in EDT.");
         }
@@ -79,10 +79,8 @@ public class Deployer {
             } catch (Exception ex) {
                 Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Can't undeploy bundle {0} ;version={1}", new String[]{simbolicname, bundleVersion});
             }
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Can't connect Virgo JMX.", ex);
-        } catch (MalformedObjectNameException me) {
-            Logger.getLogger(this.getClass().getName()).log(Level.INFO, me.getMessage(), me);
         } finally {
             JmxConnectorHelper.silentClose(connector);
         }
@@ -106,10 +104,8 @@ public class Deployer {
             } catch (Exception ex) {
                 Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Can't refresh bundle {0} ;version={1}", new String[]{file.toURI().toString(), bundleVersion});
             }
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Can't connect Virgo JMX.", ex);
-        } catch (MalformedObjectNameException me) {
-            Logger.getLogger(this.getClass().getName()).log(Level.INFO, me.getMessage(), me);
         } finally {
             JmxConnectorHelper.silentClose(connector);
         }
