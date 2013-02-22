@@ -22,7 +22,6 @@ import th.co.geniustree.virgo.server.api.VirgoServerAttributes;
 public class JmxConnectorHelper {
 
     public static synchronized JMXConnector createConnector(VirgoServerAttributes attr) throws Exception {
-        String virgoRoot = (String) attr.get(Constants.VIRGO_ROOT);
         Integer port = (Integer) attr.get(Constants.JMX_PORT);
         String user = (String) attr.get(Constants.USERNAME);
         String password = (String) attr.get(Constants.PASSWORD);
