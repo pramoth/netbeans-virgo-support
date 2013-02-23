@@ -18,15 +18,19 @@ import th.co.geniustree.virgo.server.api.Constants;
 import th.co.geniustree.virgo.server.api.StopCommand;
 
 public class Installer extends ModuleInstall {
-
-    @Override
-    public void restored() {
+    static{
         try {
             SSLContext ctx = SSLContext.getInstance("SSL");
             ctx.init(null,new TrustManager[]{new MyEmptyX509TrustManager()}, null);
+            SSLContext.setDefault(ctx);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+    }
+
+    @Override
+    public void restored() {
+        //Initial SSLContext in this method maybe too late.
     }
 
     @Override
