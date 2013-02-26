@@ -120,7 +120,7 @@ public class StartCommand {
                         JmxConnectorHelper.silentClose(createConnector);
                     }
                 }
-                 return null;
+                return null;
             }
         });
         try {
@@ -150,9 +150,10 @@ public class StartCommand {
                     task.get();
                 } catch (Exception ex) {
                     Logger.getLogger(this.getClass().getName()).log(Level.INFO, ex.getMessage());
+                } finally {
+                    instance.stoped();
                 }
                 Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Virgo stopped.");
-                instance.stoped();
             }
         });
     }
