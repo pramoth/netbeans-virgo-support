@@ -27,9 +27,9 @@ import org.openide.windows.InputOutput;
 import th.co.geniustree.virgo.server.api.Constants;
 import th.co.geniustree.virgo.server.api.VirgoServerAttributes;
 
-@ActionID(category = "Server",id = "th.co.geniustree.virgo.server.LogViewerAction")
+@ActionID(category = "Server", id = "th.co.geniustree.virgo.server.LogViewerAction")
 @ActionRegistration(displayName = "#CTL_LogViewerAction")
-@ActionReference(path = Constants.ACTION_VERGO_SERVER,position = 6000)
+@ActionReference(path = Constants.ACTION_VERGO_SERVER, position = 6000)
 @Messages("CTL_LogViewerAction=View server log file.")
 public final class LogViewerAction implements ActionListener {
 
@@ -49,11 +49,15 @@ public final class LogViewerAction implements ActionListener {
         Executors.newCachedThreadPool().execute(new Runnable() {
             @Override
             public void run() {
+                BufferedReader reader = null;
                 try {
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(Files.newInputStream(virgoServerLogfile.toPath(), StandardOpenOption.READ)));
+                    if (!virgoServerLogfile.exists()) {
+                        return;
+                    }
+                    reader = new BufferedReader(new InputStreamReader(Files.newInputStream(virgoServerLogfile.toPath(), StandardOpenOption.READ)));
                     while (true) {
-                        if(io.isClosed()){
-                            System.out.println("stop as ecspected...............");
+                        if (io.isClosed()) {
+                            System.out.println("stop as expected...............");
                             break;
                         }
                         String line = reader.readLine();
@@ -65,6 +69,14 @@ public final class LogViewerAction implements ActionListener {
                     }
                 } catch (Exception ex) {
                     Exceptions.printStackTrace(ex);
+                } finally {
+                    if (reader != null) {
+                        try {
+                            reader.close();
+                        } catch (IOException ex) {
+                            Exceptions.printStackTrace(ex);
+                        }
+                    }
                 }
             }
         });
