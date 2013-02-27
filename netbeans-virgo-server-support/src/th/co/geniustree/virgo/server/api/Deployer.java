@@ -8,9 +8,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.management.InstanceNotFoundException;
+import javax.management.MBeanException;
 import javax.management.MBeanServerConnection;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
+import javax.management.ReflectionException;
 import javax.management.remote.JMXConnector;
 import javax.swing.SwingUtilities;
 import th.co.geniustree.virgo.server.JmxConnectorHelper;
@@ -50,12 +53,23 @@ public class Deployer {
                 String[] signature = {"java.lang.String", "boolean"};
                 // invoke the execute method of the Deployer MBean
                 mBeanServerConnection.invoke(name, "deploy", params, signature);
-            } catch (Exception ex) {
-                Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Can't connect Virgo JMX.", ex);
+            } catch (IOException iOException) {
+                Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Can't connect Virgo JMX.", iOException);
                 instance.stoped();
+            } catch (MalformedObjectNameException malformedObjectNameException) {
+                Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Can't connect Virgo JMX.", malformedObjectNameException);
+                instance.stoped();
+            } catch (InstanceNotFoundException instanceNotFoundException) {
+                Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Can't connect Virgo JMX.", instanceNotFoundException);
+                instance.stoped();
+            } catch (MBeanException mBeanException) {
+                Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Operation fail..", mBeanException);
+            } catch (ReflectionException reflectionException) {
+                Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Operation fail..", reflectionException);
             } finally {
                 JmxConnectorHelper.silentClose(connector);
             }
+
         } else {
             Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Can't connect Virgo JMX.");
         }
