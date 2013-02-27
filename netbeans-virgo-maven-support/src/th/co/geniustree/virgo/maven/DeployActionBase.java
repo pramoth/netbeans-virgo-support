@@ -110,11 +110,12 @@ public abstract class DeployActionBase implements ActionListener {
                     protected void done() {
                         try {
                             get();
-                            handle.finish();
                         } catch (InterruptedException ex) {
                             Exceptions.printStackTrace(ex);
                         } catch (ExecutionException ex) {
                             Exceptions.printStackTrace(ex);
+                        } finally {
+                            handle.finish();
                         }
                     }
                 };
