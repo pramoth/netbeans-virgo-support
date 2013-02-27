@@ -41,7 +41,7 @@ public class Deployer {
         } catch (IOException iOException) {
             StartCommand startCommand = instance.getLookup().lookup(StartCommand.class);
             if (startCommand != null) {
-                connector = startCommand.startAndWait(true);
+                connector = startCommand.startAndWait(false);
             }
         }
         if (connector != null) {
