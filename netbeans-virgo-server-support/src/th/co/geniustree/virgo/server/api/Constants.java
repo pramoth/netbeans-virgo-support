@@ -14,7 +14,7 @@ public interface Constants {
     public static String INSTANCE_FILE_NAME="instanceFileName";
     public static String ACTION_VERGO_SERVER = "Actions/Virgo/Server";
     public static String VERGO_SERVER_REGISTER_PATH = "VirgoServerVTS";
-    public static String VIRGO_SERVER_NAME = "Virgo Tomcat Server 3.0.6";
+    public static String VIRGO_SERVER_NAME = "Virgo Tomcat Server 3.6.x";
     public static String DISPLAY_NAME = "displayName";
     public static String VIRGO_ROOT = "virgoRoot";
     public static String JMX_PORT = "jmxPort";
