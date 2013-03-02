@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.management.InstanceNotFoundException;
+import javax.management.JMRuntimeException;
 import javax.management.MBeanException;
 import javax.management.MBeanServerConnection;
 import javax.management.MalformedObjectNameException;
@@ -66,7 +67,9 @@ public class Deployer {
                 Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Operation fail..", mBeanException);
             } catch (ReflectionException reflectionException) {
                 Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Operation fail..", reflectionException);
-            } finally {
+            } catch(JMRuntimeException mx){
+                Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Operation fail..", mx);
+            }finally {
                 JmxConnectorHelper.silentClose(connector);
             }
 

@@ -11,21 +11,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import javax.swing.event.ChangeListener;
-import org.netbeans.api.server.ServerInstance;
-import org.netbeans.api.server.properties.InstanceProperties;
-import org.netbeans.api.server.properties.InstancePropertiesManager;
-import org.netbeans.spi.server.ServerInstanceFactory;
-import org.netbeans.spi.server.ServerInstanceProvider;
 import org.openide.WizardDescriptor;
 import org.openide.WizardDescriptor.InstantiatingIterator;
 import org.openide.util.ChangeSupport;
-import org.openide.util.Lookup;
-import org.openide.util.lookup.Lookups;
 import th.co.geniustree.virgo.server.api.Constants;
-import th.co.geniustree.virgo.server.VirgoServerInstanceImplementation;
 import th.co.geniustree.virgo.server.VirgoServerInstanceProvider;
 import th.co.geniustree.virgo.server.api.ServerInstanceProviderUtils;
-import static th.co.geniustree.virgo.server.wizard.VirgoWizardPanel1.*;
 
 /**
  *

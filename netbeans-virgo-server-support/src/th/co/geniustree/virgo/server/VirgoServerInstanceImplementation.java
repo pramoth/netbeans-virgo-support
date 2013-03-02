@@ -62,29 +62,7 @@ public class VirgoServerInstanceImplementation implements ServerInstanceImplemen
 //TODO this methos is Code dup with StartCommand. redesign it.
 
     private void checkServerStatus() {
-        Executors.newCachedThreadPool().execute(new Runnable() {
-            @Override
-            public void run() {
-                while (true) {
-                    try {
-                        Thread.sleep(2000);
-                        JMXConnector createConnector = JmxConnectorHelper.createConnector(attr);
-                        MBeanServerConnection mBeanServerConnection = createConnector.getMBeanServerConnection();
-                        Object attribute = mBeanServerConnection.getAttribute(new ObjectName("org.eclipse.virgo.kernel:type=ArtifactModel,artifact-type=bundle,name=org.eclipse.virgo.management.console,version=3.6.0.RELEASE,region=org.eclipse.virgo.region.user"), "State");
-                        if ("ACTIVE".equals(attribute)) {
-                            started();
-                            JmxConnectorHelper.silentClose(createConnector);
-                        }
-                    } catch (Exception ex) {
-                        Logger.getLogger(this.getClass().getName()).log(Level.INFO, Thread.currentThread() + " Connect Virgo server fail.");
-                    } finally {
-                        break;
-                    }
-
-                }
-
-            }
-        });
+        Executors.newCachedThreadPool().execute(new InstanceChecker(this));
     }
 
     @Override
