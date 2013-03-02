@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanException;
@@ -72,7 +73,7 @@ public abstract class DeployActionBase implements ActionListener {
                         try {
                             executeDeployTask(mavenProject, finalFile);
                         } catch (IOException ex) {
-                            ex.printStackTrace();
+                            Logger.getLogger(this.getClass().getName()).log(Level.INFO, null, ex);
                         }
                     }
                 });
@@ -111,9 +112,9 @@ public abstract class DeployActionBase implements ActionListener {
                         try {
                             get();
                         } catch (InterruptedException ex) {
-                            Exceptions.printStackTrace(ex);
+                            Logger.getLogger(this.getClass().getName()).log(Level.INFO, null, ex);
                         } catch (ExecutionException ex) {
-                            Exceptions.printStackTrace(ex);
+                            Logger.getLogger(this.getClass().getName()).log(Level.INFO, null, ex);
                         } finally {
                             handle.finish();
                         }
@@ -121,7 +122,7 @@ public abstract class DeployActionBase implements ActionListener {
                 };
                 worker.execute();
             } catch (Exception ex) {
-                Exceptions.printStackTrace(ex);
+                Logger.getLogger(this.getClass().getName()).log(Level.INFO, null, ex);
             }
         }
     }
