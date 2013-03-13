@@ -4,12 +4,8 @@
  */
 package th.co.geniustree.virgo.server;
 
+import th.co.geniustree.virgo.server.node.VirgoServerNode;
 import java.util.concurrent.Executors;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.management.MBeanServerConnection;
-import javax.management.ObjectName;
-import javax.management.remote.JMXConnector;
 import th.co.geniustree.virgo.server.api.StartCommand;
 import javax.swing.JComponent;
 import javax.swing.JPanel;

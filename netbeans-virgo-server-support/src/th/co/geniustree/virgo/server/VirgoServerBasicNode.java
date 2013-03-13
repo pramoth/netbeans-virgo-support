@@ -4,6 +4,7 @@
  */
 package th.co.geniustree.virgo.server;
 
+import th.co.geniustree.virgo.server.node.VirgoServerNode;
 import javax.swing.Action;
 
 /**

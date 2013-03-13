@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package th.co.geniustree.virgo.server;
+package th.co.geniustree.virgo.server.node;
 
 import th.co.geniustree.virgo.server.api.Constants;
 import java.util.List;
@@ -10,9 +10,8 @@ import javax.swing.Action;
 import org.openide.nodes.AbstractNode;
 import org.openide.nodes.Children;
 import org.openide.util.Lookup;
-import org.openide.util.Mutex;
 import org.openide.util.Utilities;
-import org.openide.util.lookup.Lookups;
+import th.co.geniustree.virgo.server.VirgoServerInstanceImplementation;
 
 /**
  *
@@ -23,14 +22,19 @@ public class VirgoServerNode extends AbstractNode {
     private final String NORMAL_ICON = "th/co/geniustree/virgo/server/resources/virgo.png";
     private final String STARTING_ICON = "th/co/geniustree/virgo/server/resources/virgostarting.png";
     private final String RUN_ICON = "th/co/geniustree/virgo/server/resources/virgorun.png";
-    private final VirgoServerInstanceImplementation instance;
+    private VirgoServerInstanceImplementation instance;
+    private RepositoryRootNodeFactory factory;
 
     public VirgoServerNode(VirgoServerInstanceImplementation instance) {
-        super(Children.LEAF, instance.getLookup());
-        this.instance = instance;
-        setIconBaseWithExtension(NORMAL_ICON);
+        this(new RepositoryRootNodeFactory(instance), instance.getLookup());
         setDisplayName(instance.getDisplayName());
+    }
 
+    private VirgoServerNode(RepositoryRootNodeFactory factory, Lookup lookup) {
+        super(Children.create(factory, false), lookup);
+        this.factory = factory;
+        setIconBaseWithExtension(NORMAL_ICON);
+        
     }
 
     @Override
