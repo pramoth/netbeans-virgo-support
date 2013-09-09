@@ -20,9 +20,8 @@ import org.openide.filesystems.JarFileSystem;
  */
 public class BundleUtils {
 
-    public static String getSymbolicName(MavenProject mavenProject) throws FileStateInvalidException {
-        File finalFile = new File(mavenProject.getBasedir(), "target/" + mavenProject.getBuild().getFinalName() + ".jar");
-        FileObject toFileObject = FileUtil.toFileObject(FileUtil.normalizeFile(finalFile));
+    public static String getSymbolicName(File bundleJarFile) throws FileStateInvalidException {
+        FileObject toFileObject = FileUtil.toFileObject(FileUtil.normalizeFile(bundleJarFile));
         JarFileSystem jarFileSystem = (JarFileSystem) FileUtil.getArchiveRoot(toFileObject).getFileSystem();
         Attributes mainAttributes = jarFileSystem.getManifest().getMainAttributes();
         return mainAttributes.getValue("Bundle-SymbolicName");

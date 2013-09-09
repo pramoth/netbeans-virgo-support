@@ -60,7 +60,12 @@ public abstract class DeployActionBase implements ActionListener {
         NbMavenProject nbMavenProject = context.getLookup().lookup(NbMavenProject.class);
         final MavenProject mavenProject = nbMavenProject.getMavenProject();
         final File baseDir = mavenProject.getBasedir();
-        String finalFileName = "target/" + mavenProject.getBuild().getFinalName() + ".jar";
+        String extension = ".jar";
+        if ("war".equalsIgnoreCase(mavenProject.getPackaging())) {
+            extension = ".war";
+        }
+        String finalFileName = "target/" + mavenProject.getBuild().getFinalName() + extension;
+        Logger.getLogger(DeployActionBase.class.getName()).log(Level.INFO, "-------------artifact file:{0}",finalFileName);
         final File finalFile = new File(baseDir, finalFileName);
         RunConfig createRunConfig = RunUtils.createRunConfig(mavenProject.getBasedir(), context, finalFileName, Arrays.asList("package"));
         ExecutorTask task = RunUtils.run(createRunConfig);
@@ -84,7 +89,7 @@ public abstract class DeployActionBase implements ActionListener {
     public abstract void doOperation(Deployer deployer, File finalFile, String symbolicName, String bundleVersion, boolean recover) throws Exception;
 
     private void executeDeployTask(MavenProject mavenProject, final File finalFile) throws IOException {
-        final String symbolicName = BundleUtils.getSymbolicName(mavenProject);
+        final String symbolicName = BundleUtils.getSymbolicName(finalFile);
         final String bundleVersion = BundleUtils.getBundleVersion(finalFile);
         ServerInstanceProvider virgoProvider = ServerInstanceProviderUtils.getVirgoServerInstanceProvider();
         if (virgoProvider != null) {
